@@ -2,9 +2,11 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import routes from './routes';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
+app.use(cors());
 const port = process.env.PORT || 5000;
 const databaseUri = `mongodb://${process.env.DATABASE_USER}:${
   process.env.DATABASE_PASSWORD
