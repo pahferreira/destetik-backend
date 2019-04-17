@@ -1,6 +1,6 @@
-# Destetik
+# Destetik Backend Repository
 
-Repository to GPS Project
+Repository to backend code of GPS Project
 
 # How to Run
 
