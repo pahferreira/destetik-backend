@@ -70,7 +70,19 @@ class ServiceController {
       console.log(err);
     }
   }
-
+  
+  async delete(req, res){
+    try{
+      const service = await Service.findOneAndDelete({_id: req.params.id});
+      if(service){
+        return res.json(service);
+      }else{
+        return res.json({error: 'Service not found'});
+      }
+    } catch(err){
+      console.log(err);
+    }
+  }
 }
 
 const serviceController = new ServiceController();
