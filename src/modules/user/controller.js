@@ -11,13 +11,13 @@ class UserController {
       if (req.body.password !== req.body.password2)
         return res
           .status(400)
-          .json({ error: 'As senhas não coincidem.' });
+          .json({ password: 'As senhas não coincidem.' });
       const { name, email, password } = req.body;
       const checkUser = await User.find({ email });
       if (checkUser.length > 0)
         return res
           .status(400)
-          .json({ error: 'Este e-mail já foi cadastrado.' });
+          .json({ email: 'Este e-mail já foi cadastrado.' });
       const newUser = { name, email, password };
       const salts = 10;
       const hashedPassword = await new Promise((resolve, reject) => {
@@ -38,10 +38,10 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ error: 'Usuário ' + user.name + ' não encontrado.' });
+      if (!user) return res.status(404).json({ name: 'Usuário ' + user.name + ' não encontrado.' });
       const passwordMatch = await bcrypt.compareSync(password, user.password);
       if (!passwordMatch)
-        return res.status(400).json({ error: 'Senha incorreta.' });
+        return res.status(400).json({ password: 'Senha incorreta.' });
       const payload = {
         id: user.id,
         email: user.email,
@@ -65,9 +65,9 @@ class UserController {
         var user = await User.findById(req.params.id);
         const { old_password, password, confirm_password } = req.body;
         const pass_ok = await bcrypt.compare(old_password, user.password);
-        if (!pass_ok) return res.json({ error: 'Senha incorreta.' });
+        if (!pass_ok) return res.json({ password: 'Senha incorreta.' });
         if (password !== confirm_password)
-          return res.json({ error: 'As senhas não coincidem.' });
+          return res.json({ password: 'As senhas não coincidem.' });
 
         delete req.body['old_password'];
         delete req.body['confirm_password'];
@@ -79,7 +79,7 @@ class UserController {
         if (checkUser.length > 0)
           return res
             .status(400)
-            .json({ error: 'Este e-mail já foi registrado.' });
+            .json({ email: 'Este e-mail já foi registrado.' });
       }
       user = await User.findOneAndUpdate(
         { _id: req.params.id },
@@ -100,7 +100,7 @@ class UserController {
       } else {
         return res
           .status(400)
-          .json({ error: 'Usuário ' + user.name + ' não encontrado' });
+          .json({ name: 'Usuário ' + user.name + ' não encontrado' });
       }
     } catch (err) {
       console.log(err);
@@ -124,7 +124,7 @@ class UserController {
       } else {
         return res
           .status(400)
-          .json({ error: 'Usuário ' + user.name + ' não encontrado' });
+          .json({ name: 'Usuário ' + user.name + ' não encontrado' });
       }
     } catch (err) {
       console.log(err);
