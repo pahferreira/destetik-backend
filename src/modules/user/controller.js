@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
+
 dotenv.config();
 
 class UserController {
@@ -68,26 +69,8 @@ class UserController {
     }
   }
 
-  async update(req, res) {
+  async update(req, res){
     try {
-      if ('old_password' in req.body) {
-        var user = await User.findById(req.params.id);
-        const { old_password, password, confirm_password } = req.body;
-        const pass_ok = await bcrypt.compare(old_password, user.password);
-        if (!pass_ok){
-          return res
-            .status(400)
-            .json({ password: 'Senha incorreta.' });
-        }
-        if (password !== confirm_password){
-          return res
-            .status(400)
-            .json({ password: 'As senhas não coincidem.' });
-        }
-        delete req.body['old_password'];
-        delete req.body['confirm_password'];
-        req.body['password'] = await bcrypt.hash(password, 10);
-      }
       if ('email' in req.body) {
         const { email } = req.body;
         const checkUser = await User.find({ email });
@@ -96,11 +79,11 @@ class UserController {
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
       }
-      user = await User.findOneAndUpdate(
-        { _id: req.params.id },
+      const user = await User.findOneAndUpdate(
+        { _id: res.locals.auth_data.id },
         { $set: req.body },
         { useFindAndModify: false, new: true }
-      );
+      ).select('-password');
       return res.json(user);
     } catch (err) {
       console.log(err);
