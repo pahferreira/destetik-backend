@@ -19,7 +19,7 @@ class ServiceController {
       });
       if (checkService.length > 0)
         return res
-          .status(400)
+          .status(404)
           .json({name: 'O serviço já foi cadastrado.'})
       const newService = { name, description };
       const service = await Service.create(newService);
@@ -39,8 +39,8 @@ class ServiceController {
         });
         if (checkService.length > 0)
           return res
-            .status(400)
-            .json({name: 'Serviço ' + service.name + ' já foi cadastrado.'})
+            .status(404)
+            .json({name: 'O Serviço já foi cadastrado.'})
       }
       const service = await Service.findOneAndUpdate(
         { _id: req.params.id },
@@ -60,8 +60,8 @@ class ServiceController {
         return res.json(service);
       } else {
         return res
-          .status(400)
-          .json({ name: 'Serviço ' + service.name + ' não encontrado' });
+          .status(404)
+          .json({ name: 'Serviço não encontrado' });
       }
     } catch (err) {
       console.log(err);
@@ -84,8 +84,8 @@ class ServiceController {
         return res.json(service);
       }else{
         return res
-          .status(400)
-          .json({name: 'Serviço ' + service.name + ' not found'});
+          .status(404)
+          .json({name: 'Serviço não encontrado'});
       }
     } catch(err){
       console.log(err);
