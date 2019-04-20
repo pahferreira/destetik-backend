@@ -8,16 +8,18 @@ dotenv.config();
 class UserController {
   async store(req, res) {
     try {
-      if (req.body.password !== req.body.password2)
+      if (req.body.password !== req.body.password2){
         return res
           .status(400)
           .json({ password: 'As senhas não coincidem.' });
+      }
       const { name, email, password } = req.body;
       const checkUser = await User.find({ email });
-      if (checkUser.length > 0)
+      if (checkUser.length > 0){
         return res
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
+      }
       const newUser = { name, email, password };
       const salts = 10;
       const hashedPassword = await new Promise((resolve, reject) => {
@@ -38,10 +40,17 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ name: 'Usuário ' + user.name + ' não encontrado.' });
+      if (!user) {
+        return res
+          .status(404)
+          .json({ name: 'Usuário não encontrado.' });
+      }
       const passwordMatch = await bcrypt.compareSync(password, user.password);
-      if (!passwordMatch)
-        return res.status(400).json({ password: 'Senha incorreta.' });
+      if (!passwordMatch){
+        return res
+          .status(400)
+          .json({ password: 'Senha incorreta.' });
+      }
       const payload = {
         id: user.id,
         email: user.email,
@@ -65,10 +74,16 @@ class UserController {
         var user = await User.findById(req.params.id);
         const { old_password, password, confirm_password } = req.body;
         const pass_ok = await bcrypt.compare(old_password, user.password);
-        if (!pass_ok) return res.json({ password: 'Senha incorreta.' });
-        if (password !== confirm_password)
-          return res.json({ password: 'As senhas não coincidem.' });
-
+        if (!pass_ok){
+          return res
+            .status(400)
+            .json({ password: 'Senha incorreta.' });
+        }
+        if (password !== confirm_password){
+          return res
+            .status(400)
+            .json({ password: 'As senhas não coincidem.' });
+        }
         delete req.body['old_password'];
         delete req.body['confirm_password'];
         req.body['password'] = await bcrypt.hash(password, 10);
@@ -99,8 +114,8 @@ class UserController {
         return res.json(user);
       } else {
         return res
-          .status(400)
-          .json({ name: 'Usuário ' + user.name + ' não encontrado' });
+          .status(404)
+          .json({ name: 'Usuário não encontrado' });
       }
     } catch (err) {
       console.log(err);
@@ -123,8 +138,8 @@ class UserController {
         return res.json(user);
       } else {
         return res
-          .status(400)
-          .json({ name: 'Usuário ' + user.name + ' não encontrado' });
+          .status(404)
+          .json({ name: 'Usuário não encontrado' });
       }
     } catch (err) {
       console.log(err);
