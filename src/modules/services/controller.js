@@ -12,13 +12,15 @@ class ServiceController {
 
   async store(req, res) {
     try {
-      var { name, description } = req.body;
+      const { name, description } = req.body;
       name = capitalize(name);
       const checkService = await Service.find({
         name
       });
       if (checkService.length > 0)
-        return res.json({error: 'This service is already registered.'})
+        return res
+          .status(400)
+          .json({name: 'O serviço já foi cadastrado.'})
       const newService = { name, description };
       const service = await Service.create(newService);
       return res.json(service);
@@ -36,7 +38,9 @@ class ServiceController {
           name
         });
         if (checkService.length > 0)
-          return res.json({error: 'This service is already registered.'})
+          return res
+            .status(400)
+            .json({name: 'Serviço ' + service.name + ' já foi cadastrado.'})
       }
       const service = await Service.findOneAndUpdate(
         { _id: req.params.id },
@@ -55,7 +59,9 @@ class ServiceController {
       if (service) {
         return res.json(service);
       } else {
-        return res.json({ error: 'Service not found' });
+        return res
+          .status(400)
+          .json({ name: 'Serviço ' + service.name + ' não encontrado' });
       }
     } catch (err) {
       console.log(err);
@@ -77,7 +83,9 @@ class ServiceController {
       if(service){
         return res.json(service);
       }else{
-        return res.json({error: 'Service not found'});
+        return res
+          .status(400)
+          .json({name: 'Serviço ' + service.name + ' not found'});
       }
     } catch(err){
       console.log(err);
