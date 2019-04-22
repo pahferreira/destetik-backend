@@ -116,7 +116,7 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const user = await User.findOneAndDelete({ _id: req.params.id });
+      const user = await User.findOneAndDelete({ _id: res.locals.auth_data.id });
       if (user) {
         return res.json(user);
       } else {
