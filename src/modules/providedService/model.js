@@ -7,6 +7,10 @@ const ProvidedServiceSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'service'
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'user'
+  },
   price: {
     type: Number,
     required: true

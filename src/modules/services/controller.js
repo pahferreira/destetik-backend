@@ -12,8 +12,8 @@ class ServiceController {
 
   async store(req, res) {
     try {
+      req.body['name'] = capitalize(req.body['name']);
       const { name, description } = req.body;
-      name = capitalize(name);
       const checkService = await Service.find({
         name
       });
