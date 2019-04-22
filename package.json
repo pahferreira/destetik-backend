@@ -26,6 +26,7 @@
     "esm": "^3.2.22",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
     "mongoose": "^5.4.20",
     "nodemon": "^1.18.10"
   }
