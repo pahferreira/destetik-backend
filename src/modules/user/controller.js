@@ -74,7 +74,7 @@ class UserController {
       if ('email' in req.body) {
         const { email } = req.body;
         const checkUser = await User.find({ email });
-        if (checkUser.length > 0)
+        if (checkUser.length > 0 && checkUser._id != res.locals.auth_data.id )
           return res
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
