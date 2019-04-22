@@ -1,8 +1,8 @@
-import User from './model';
+  import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import jwtDecode from 'jwt-decode';
+// import jwtDecode from 'jwt-decode';
 
 dotenv.config();
 
@@ -65,12 +65,10 @@ class UserController {
 
   async update(req, res) {
     try {
-      const token = req.header('Authorization').split('Bearer ')[1];
-      const idFromUserToken = jwtDecode(token).id;
       if ('email' in req.body) {
         const { email } = req.body;
         const checkUser = await User.find({ email });
-        if (checkUser.length == 1 && checkUser[0].id != idFromUserToken)
+        if (checkUser.length == 1 && checkUser[0].id != res.locals.auth_data.id)
           return res
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
@@ -110,10 +108,8 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const token = req.header('Authorization').split('Bearer ')[1];
-      const idFromUserToken = jwtDecode(token).id;
       const user = await User.findOneAndDelete({
-        _id: idFromUserToken
+        _id: res.locals.auth_data.id
       });
       if (user) {
         return res.json(user);
