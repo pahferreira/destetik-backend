@@ -107,7 +107,7 @@ class UserController {
 
   async showAll(req, res) {
     try {
-      const users = await User.find();
+      const users = await User.find().populate('services');
       return res.json(users);
     } catch (err) {
       console.log(err);
