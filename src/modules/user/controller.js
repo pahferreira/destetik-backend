@@ -2,21 +2,19 @@ import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-
+import jwtDecode from 'jwt-decode';
 
 dotenv.config();
 
 class UserController {
   async store(req, res) {
     try {
-      if (req.body.password !== req.body.password2){
-        return res
-          .status(400)
-          .json({ password: 'As senhas não coincidem.' });
+      if (req.body.password !== req.body.password2) {
+        return res.status(400).json({ password: 'As senhas não coincidem.' });
       }
       const { name, email, password } = req.body;
       const checkUser = await User.find({ email });
-      if (checkUser.length > 0){
+      if (checkUser.length > 0) {
         return res
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
@@ -42,15 +40,11 @@ class UserController {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
-        return res
-          .status(404)
-          .json({ name: 'Usuário não encontrado.' });
+        return res.status(404).json({ name: 'Usuário não encontrado.' });
       }
       const passwordMatch = await bcrypt.compareSync(password, user.password);
-      if (!passwordMatch){
-        return res
-          .status(400)
-          .json({ password: 'Senha incorreta.' });
+      if (!passwordMatch) {
+        return res.status(400).json({ password: 'Senha incorreta.' });
       }
       const payload = {
         id: user.id,
@@ -69,12 +63,14 @@ class UserController {
     }
   }
 
-  async update(req, res){
+  async update(req, res) {
     try {
+      const token = req.header('Authorization').split('Bearer ')[1];
+      const idFromUserToken = jwtDecode(token).id;
       if ('email' in req.body) {
         const { email } = req.body;
         const checkUser = await User.find({ email });
-        if (checkUser.length > 0 && checkUser._id != res.locals.auth_data.id )
+        if (checkUser.length == 1 && checkUser[0].id != idFromUserToken)
           return res
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
@@ -96,9 +92,7 @@ class UserController {
       if (user) {
         return res.json(user);
       } else {
-        return res
-          .status(404)
-          .json({ name: 'Usuário não encontrado' });
+        return res.status(404).json({ name: 'Usuário não encontrado' });
       }
     } catch (err) {
       console.log(err);
@@ -116,13 +110,15 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const user = await User.findOneAndDelete({ _id: res.locals.auth_data.id });
+      const token = req.header('Authorization').split('Bearer ')[1];
+      const idFromUserToken = jwtDecode(token).id;
+      const user = await User.findOneAndDelete({
+        _id: idFromUserToken
+      });
       if (user) {
         return res.json(user);
       } else {
-        return res
-          .status(404)
-          .json({ name: 'Usuário não encontrado' });
+        return res.status(404).json({ name: 'Usuário não encontrado' });
       }
     } catch (err) {
       console.log(err);
