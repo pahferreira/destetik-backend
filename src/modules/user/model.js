@@ -31,7 +31,7 @@ const UserSchema = new Schema({
   services: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'service'
+      ref: 'providedService'
     }
   ]
 });

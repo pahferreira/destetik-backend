@@ -4,10 +4,9 @@ import auth from '../middlewares/auth';
 const providedServiceRouter = express.Router();
 
 providedServiceRouter.post('/create', auth, ProvidedServiceController.store);
-// providedServiceRouter.patch('/update/:id', providedServiceController.update);
+providedServiceRouter.patch('/update/:id', auth, ProvidedServiceController.update);
 providedServiceRouter.get('/show', auth, ProvidedServiceController.show);
 providedServiceRouter.get('/avaliable', auth, ProvidedServiceController.avaliable);
-// providedServiceRouter.get('/', providedServiceController.showAll);
-// providedServiceRouter.delete('/:id', providedServiceController.delete);
+providedServiceRouter.delete('/delete/:id', auth, ProvidedServiceController.delete);
 
 export default providedServiceRouter;
