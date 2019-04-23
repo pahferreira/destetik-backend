@@ -33,7 +33,19 @@ const UserSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'providedService'
     }
-  ]
+  ],
+  rating: {
+    type: Number,
+    default: 0
+  },
+  qtEvaluation: {
+    type: Number,
+    default: 0
+  },
+  profileImg:{
+    type: String,
+    default: 'uploads\\notFound.jpg'
+  }
 });
 
 export default mongoose.model('user', UserSchema);

@@ -9,7 +9,11 @@ const ServiceSchema = new Schema({
   description: {
     type: String,
     required: true
+  },
+  image:{
+    type: String
   }
+
 });
 
 export default mongoose.model('service', ServiceSchema);

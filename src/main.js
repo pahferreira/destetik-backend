@@ -19,6 +19,7 @@ mongoose
   .then(() => console.log('Database Connected.'))
   .catch(err => console.log(err));
 
+app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(routes);
