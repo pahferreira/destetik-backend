@@ -1,14 +1,15 @@
-import User from './model';
+  import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import jwtDecode from 'jwt-decode';
+// import jwtDecode from 'jwt-decode';
 
 dotenv.config();
 
 class UserController {
   async store(req, res) {
     try {
+      console.log(req.file);
       if (req.body.password !== req.body.password2) {
         return res.status(400).json({ password: 'As senhas não coincidem.' });
       }
@@ -19,7 +20,8 @@ class UserController {
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
       }
-      const newUser = { name, email, password };
+      const profileImg = req.file.path;
+      const newUser = { name, email, password, profileImg };
       const salts = 10;
       const hashedPassword = await new Promise((resolve, reject) => {
         bcrypt.hash(newUser.password, salts, function(err, hash) {
@@ -65,12 +67,10 @@ class UserController {
 
   async update(req, res) {
     try {
-      const token = req.header('Authorization').split('Bearer ')[1];
-      const idFromUserToken = jwtDecode(token).id;
       if ('email' in req.body) {
         const { email } = req.body;
         const checkUser = await User.find({ email });
-        if (checkUser.length == 1 && checkUser[0].id != idFromUserToken)
+        if (checkUser.length == 1 && checkUser[0].id != res.locals.auth_data.id)
           return res
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
@@ -101,7 +101,13 @@ class UserController {
 
   async showAll(req, res) {
     try {
-      const users = await User.find().populate('services');
+      const users = await User.find().populate({
+        path: 'services',
+        populate: [{
+          path: 'serviceId',
+          model: 'service'
+        }]
+      });
       return res.json(users);
     } catch (err) {
       console.log(err);
@@ -110,10 +116,8 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const token = req.header('Authorization').split('Bearer ')[1];
-      const idFromUserToken = jwtDecode(token).id;
       const user = await User.findOneAndDelete({
-        _id: idFromUserToken
+        _id: res.locals.auth_data.id
       });
       if (user) {
         return res.json(user);
