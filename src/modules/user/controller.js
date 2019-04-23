@@ -9,7 +9,7 @@ dotenv.config();
 class UserController {
   async store(req, res) {
     try {
-      console.log(req.file);
+      //console.log(req.file);
       if (req.body.password !== req.body.password2) {
         return res.status(400).json({ password: 'As senhas não coincidem.' });
       }
@@ -20,8 +20,8 @@ class UserController {
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
       }
-      const profileImg = req.file.path;
-      const newUser = { name, email, password, profileImg };
+      //const profileImg = req.file.path;
+      const newUser = { name, email, password };
       const salts = 10;
       const hashedPassword = await new Promise((resolve, reject) => {
         bcrypt.hash(newUser.password, salts, function(err, hash) {
