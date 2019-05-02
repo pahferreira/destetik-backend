@@ -14,7 +14,7 @@ class ProvidedServiceController {
       const _service = await Service.findOne({name: service});
       if (!_service)
         return res.send({error: "Serviço não encontrado"})
-      const user = await User.findById(res.locals.auth_data.id);
+      const user = await User.findById(req.user.id);
       const providedCheck = await ProvidedService.find({
         userId: user._id,
         serviceId: _service._id
@@ -35,7 +35,7 @@ class ProvidedServiceController {
 
   async show(req, res){
     try{
-      const services = await ProvidedService.find({ userId : res.locals.auth_data.id }).populate('serviceId');
+      const services = await ProvidedService.find({ userId : req.user.id }).populate('serviceId');
       return res.json(services);
     }catch(err){
       console.log(err);
@@ -44,7 +44,7 @@ class ProvidedServiceController {
 
   async avaliable(req, res) {
     try {
-      const providedServices = await ProvidedService.find({ userId : res.locals.auth_data.id }).select('serviceId');
+      const providedServices = await ProvidedService.find({ userId : req.user.id }).select('serviceId');
       let services_id = [];
       await providedServices.forEach(element => {
         services_id.push(element.serviceId);
@@ -62,7 +62,7 @@ class ProvidedServiceController {
       if (!price)
         return res.send({error: "Alguns dados estão faltando"});
       const provided = await ProvidedService.findById(req.params.id);
-      if (provided.userId  != res.locals.auth_data.id)
+      if (provided.userId  != req.user.id)
         return res.status(401).send({error: "Não autorizado"});
       provided.price = price;
       provided.save();
@@ -76,7 +76,7 @@ class ProvidedServiceController {
   async delete(req, res){
     try{
       const provided = await ProvidedService.findById(req.params.id);
-      if (provided.userId  != res.locals.auth_data.id)
+      if (provided.userId  != req.user.id)
         return res.status(401).send({error: "Não autorizado"});
       provided.delete();
       return res.send({sucessfull: "Serviço deletado com sucesso"})

@@ -2,11 +2,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import routes from './routes';
-import cors from 'cors';
+import Cors from 'cors';
+import passport from 'passport';
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// Database Config
 const port = process.env.PORT || 5000;
 const databaseUri = `mongodb://${process.env.DATABASE_USER}:${
   process.env.DATABASE_PASSWORD
@@ -19,9 +21,14 @@ mongoose
   .then(() => console.log('Database Connected.'))
   .catch(err => console.log(err));
 
+require('./config/passport')  
+
+app.use(Cors());
 app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(routes);
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.listen(port, () => console.log(`Server is running! Port: ${port}`));
