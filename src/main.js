@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import routes from './routes';
 import Cors from 'cors';
 import passport from 'passport';
+require('./config/passport');
 
 dotenv.config();
 const app = express();
@@ -21,14 +22,12 @@ mongoose
   .then(() => console.log('Database Connected.'))
   .catch(err => console.log(err));
 
-require('./config/passport')  
-
 app.use(Cors());
 app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(routes);
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.listen(port, () => console.log(`Server is running! Port: ${port}`));

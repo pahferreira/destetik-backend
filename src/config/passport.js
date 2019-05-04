@@ -1,38 +1,35 @@
 import jwtSecret from './jwtConfig';
-import bcrypt from 'bcrypt';
-import User from '../modules/user/model'
+import User from '../modules/user/model';
+import passport from 'passport';
+import passport_jwt from 'passport-jwt';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
-const passport = require('passport'),
-    JWTstrategy = require('passport-jwt').Strategy,
-    ExtractJWT = require('passport-jwt').ExtractJwt;
-
+const JWTstrategy = passport_jwt.Strategy,
+  ExtractJWT = passport_jwt.ExtractJwt;
 
 const opts = {
-    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtSecret.secret,
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: jwtSecret.secret
 };
-    
+
 passport.use(
-'jwt',
-new JWTstrategy(opts, (jwt_payload, done) => {
-    console.log(jwt_payload)
+  'jwt',
+  new JWTstrategy(opts, (jwt_payload, done) => {
     try {
-    User.findOne({
-        _id: jwt_payload.id,
-    }).select('-password').then(user => {
-        if (user) {
-        console.log('user found in db in passport');
-        // note the return removed with passport JWT - add this return for passport local
-        done(null, user);
-        } else {
-        console.log('user not found in db');
-        done(null, false);
-        }
-    });
+      User.findOne({
+        _id: jwt_payload.id
+      })
+        .select('-password')
+        .then(user => {
+          if (user) {
+            done(null, user);
+          } else {
+            done(null, false);
+          }
+        });
     } catch (err) {
-    done(err);
+      done(err);
     }
-}),
+  })
 );
