@@ -87,7 +87,13 @@ class UserController {
 
   async show(req, res) {
     try {
-      const user = await User.findById(req.params.id);
+      const user = await User.findById(req.params.id).populate({
+        path: 'services',
+        populate: [{
+          path: 'serviceId',
+          model: 'service'
+        }]
+      }).select('-password');
       if (user) {
         return res.json(user);
       } else {
@@ -106,7 +112,7 @@ class UserController {
           path: 'serviceId',
           model: 'service'
         }]
-      });
+      }).select('-password');
       return res.json(users);
     } catch (err) {
       console.log(err);
