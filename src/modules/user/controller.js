@@ -2,7 +2,6 @@ import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import isValid from './validate';
 
 dotenv.config();
 
@@ -19,10 +18,6 @@ class UserController {
         return res
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
-      }
-      console.log(email.isValid);
-      if (!email.isValid) {
-        return res.status(400).json(email.error);
       }
       //const profileImg = req.file.path;
       const newUser = { name, email, password };
