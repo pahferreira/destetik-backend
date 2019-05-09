@@ -2,6 +2,7 @@ import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import isValid from './validate';
 
 dotenv.config();
 
@@ -18,6 +19,10 @@ class UserController {
         return res
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
+      }
+      console.log(email.isValid);
+      if (!email.isValid) {
+        return res.status(400).json(email.error);
       }
       //const profileImg = req.file.path;
       const newUser = { name, email, password };
@@ -87,13 +92,17 @@ class UserController {
 
   async show(req, res) {
     try {
-      const user = await User.findById(req.params.id).populate({
-        path: 'services',
-        populate: [{
-          path: 'serviceId',
-          model: 'service'
-        }]
-      }).select('-password');
+      const user = await User.findById(req.params.id)
+        .populate({
+          path: 'services',
+          populate: [
+            {
+              path: 'serviceId',
+              model: 'service'
+            }
+          ]
+        })
+        .select('-password');
       if (user) {
         return res.json(user);
       } else {
@@ -106,13 +115,17 @@ class UserController {
 
   async showAll(req, res) {
     try {
-      const users = await User.find().populate({
-        path: 'services',
-        populate: [{
-          path: 'serviceId',
-          model: 'service'
-        }]
-      }).select('-password');
+      const users = await User.find()
+        .populate({
+          path: 'services',
+          populate: [
+            {
+              path: 'serviceId',
+              model: 'service'
+            }
+          ]
+        })
+        .select('-password');
       return res.json(users);
     } catch (err) {
       console.log(err);
