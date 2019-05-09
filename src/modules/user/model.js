@@ -45,7 +45,7 @@ const UserSchema = new Schema({
   },
   profileImg: {
     type: String,
-    default: 'uploads\\notFound.jpg'
+    default: 'https://res.cloudinary.com/destetik/image/upload/v1557010793/notFound_nlnz38.jpg'
   }
 });
 

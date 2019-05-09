@@ -2,13 +2,16 @@ import User from './model';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import cloudinary from 'cloudinary';
+
+const cloudinary_v2 = cloudinary.v2;
 
 dotenv.config();
 
 class UserController {
   async store(req, res) {
     try {
-      //console.log(req.file);
       if (req.body.password !== req.body.password2) {
         return res.status(400).json({ password: 'As senhas não coincidem.' });
       }
@@ -19,7 +22,6 @@ class UserController {
           .status(400)
           .json({ email: 'Este e-mail já foi cadastrado.' });
       }
-      //const profileImg = req.file.path;
       const newUser = { name, email, password };
       const salts = 10;
       const hashedPassword = await new Promise((resolve, reject) => {
@@ -38,6 +40,7 @@ class UserController {
 
   async login(req, res) {
     try {
+      console.log(req.body);
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
@@ -137,6 +140,41 @@ class UserController {
       } else {
         return res.status(404).json({ name: 'Usuário não encontrado' });
       }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async update_photo_profile(req, res) {
+    try {
+      const path = req.file.path;
+      const uniqueFilename = new Date().toISOString();
+
+      cloudinary_v2.config({
+        cloud_name: `${process.env.CLOUDINARY_NAME}`,
+        api_key: `${process.env.CLOUDINARY_API_KEY}`,
+        api_secret: `${process.env.CLOUDINARY_API_SECRET}`
+      });
+
+      cloudinary_v2.uploader.upload(
+        path,
+        { public_id: `profile/${uniqueFilename}`, tags: `profile` },
+        async (err, image) => {
+          if (err) {
+            return res.send(err);
+          }
+          // remove file from server
+          fs.unlinkSync(path);
+
+          const update = { profileImg: image.url };
+          const user = await User.findOneAndUpdate(
+            { _id: req.user.id },
+            { $set: update },
+            { useFindAndModify: false, new: true }
+          ).select('-password');
+          return res.json(user);
+        }
+      );
     } catch (err) {
       console.log(err);
     }
