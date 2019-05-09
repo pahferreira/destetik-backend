@@ -13,7 +13,8 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    select: false
   },
   address: {
     street: String,
@@ -42,7 +43,7 @@ const UserSchema = new Schema({
     type: Number,
     default: 0
   },
-  profileImg:{
+  profileImg: {
     type: String,
     default: 'uploads\\notFound.jpg'
   }
