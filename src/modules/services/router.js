@@ -1,6 +1,6 @@
 import express from 'express';
 import ServiceController from './controller';
-import isValid from '../user/validate';
+import isValid from '../middlewares/validate'
 
 const serviceRouter = express.Router();
 
