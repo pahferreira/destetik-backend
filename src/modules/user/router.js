@@ -1,7 +1,7 @@
 import express from 'express';
 import UserController from './controller';
 import auth from '../middlewares/auth';
-import isValid from './validate';
+import isValid from '../middlewares/validate';
 import upload from '../middlewares/upload';
 const userRouter = express.Router();
 
