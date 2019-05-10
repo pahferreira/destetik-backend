@@ -7,11 +7,16 @@ const userRouter = express.Router();
 
 //upload.single('productImage')
 userRouter.post('/register', isValid, UserController.store);
-userRouter.post('/login', UserController.login);
-userRouter.patch('/update', auth, UserController.update);
+userRouter.post('/login', isValid, UserController.login);
+userRouter.patch('/update', auth, isValid, UserController.update);
 userRouter.get('/:id', UserController.show);
 userRouter.get('/', UserController.showAll);
 userRouter.delete('/delete', auth, UserController.delete);
-userRouter.patch('/image_update', auth, upload.single('image_profile'), UserController.update_photo_profile);
+userRouter.patch(
+  '/image_update',
+  auth,
+  upload.single('image_profile'),
+  UserController.update_photo_profile
+);
 
-export default userRouter;  
+export default userRouter;
