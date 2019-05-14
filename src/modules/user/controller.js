@@ -179,6 +179,19 @@ class UserController {
       console.log(err);
     }
   }
+
+  async current(req, res, next) {
+    try {
+      const user = await User.findById({ _id: req.user.id });
+      if (user) {
+        return res.json(user);
+      } else {
+        return res.status(404).json({ name: 'Usuário não encontrado' });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 const userController = new UserController();
