@@ -9,7 +9,7 @@ class ProvidedServiceController {
   async store(req, res){
     try{
       const { service, price } = req.body;
-      if (!service || !price)
+      if (!service)
         return res.send({error: "Alguns dados estão faltando"});
       const _service = await Service.findOne({name: service});
       if (!_service)
@@ -42,7 +42,7 @@ class ProvidedServiceController {
     }
   }
 
-  async avaliable(req, res) {
+  async available(req, res) {
     try {
       const providedServices = await ProvidedService.find({ userId : req.user.id }).select('serviceId');
       let services_id = [];

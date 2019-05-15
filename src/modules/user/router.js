@@ -9,8 +9,9 @@ const userRouter = express.Router();
 userRouter.post('/register', isValid, UserController.store);
 userRouter.post('/login', isValid, UserController.login);
 userRouter.patch('/update', auth, isValid, UserController.update);
-userRouter.get('/:id', UserController.show);
-userRouter.get('/', UserController.showAll);
+userRouter.get('/show/:id', UserController.show);
+userRouter.get('/all', UserController.showAll);
+userRouter.get('/current', auth, UserController.current);
 userRouter.delete('/delete', auth, UserController.delete);
 userRouter.patch(
   '/image_update',

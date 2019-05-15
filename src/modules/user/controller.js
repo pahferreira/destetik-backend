@@ -4,14 +4,38 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import cloudinary from 'cloudinary';
+import passwordValidator from 'password-validator';
+import { RSA_NO_PADDING } from 'constants';
 
 const cloudinary_v2 = cloudinary.v2;
+const schema = new passwordValidator();
+      schema
+        .is()
+        .min(8)
+        .has()
+        .digits()
+        .has()
+        .symbols()
+        .has()
+        .letters();
 
 dotenv.config();
 
 class UserController {
   async store(req, res) {
-    try {
+    try {      
+      if (req.body.password.length < 8) {
+        return res
+          .status(400)
+          .json({ password: 'A senha precisa ter mais de oito dígitos' });
+      } else if (!schema.validate(req.body.password)) {
+        return res
+          .status(400)
+          .json({
+            password:
+              'A senha precisa ter letras, números e caracteres especiais'
+          });
+      }
       if (req.body.password !== req.body.password2) {
         return res.status(400).json({ password: 'As senhas não coincidem.' });
       }
@@ -42,7 +66,7 @@ class UserController {
     try {
       console.log(req.body);
       const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select('password');
       if (!user) {
         return res.status(404).json({ name: 'Usuário não encontrado.' });
       }
@@ -134,7 +158,7 @@ class UserController {
     try {
       const user = await User.findOneAndDelete({
         _id: req.user.id
-      });
+      }).select('-password');
       if (user) {
         return res.json(user);
       } else {
@@ -175,6 +199,28 @@ class UserController {
           return res.json(user);
         }
       );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async current(req, res, next) {
+    try {
+      const user = await User.findById({ _id: req.user.id })
+      .populate({
+        path: 'services',
+        populate: [
+          {
+            path: 'serviceId',
+            model: 'service'
+          }
+        ]
+      });
+      if (user) {
+        return res.json(user);
+      } else {
+        return res.status(404).json({ name: 'Usuário não encontrado' });
+      }
     } catch (err) {
       console.log(err);
     }

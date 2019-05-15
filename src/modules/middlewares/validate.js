@@ -8,25 +8,25 @@ const isValid = (req, res, next) => {
   // Name
   if ('name' in req.body) {
     if (validator.isEmpty(name)) {
-      result.errors.name = "Campo nome não pode ser vazio";
+      result.errors.name = 'Campo nome não pode ser vazio';
     }
   }
 
   // Email
-  if ('email' in req.body){
+  if ('email' in req.body) {
     if (validator.isEmpty(email)) {
-      result.errors.email = "Campo email não pode ser vazio";
+      result.errors.email = 'Campo email não pode ser vazio';
     } else if (!validator.isEmail(email)) {
-      result.errors.email = "Formato de email inválido";
+      result.errors.email = 'Formato de email inválido';
     }
   }
-  
-   // Phone
-   if ('phone' in req.body) {
-     const phoneRegex = /(?=^(\+?5{2}\-?|0)[1-9]{2}\-?\d{4}\-?\d{4}$)(^(\+?5{2}\-?|0)[1-9]{2}\-?[6-9]{1}\d{3}\-?\d{4}$)|(^(\+?5{2}\-?|0)[1-9]{2}\-?9[6-9]{1}\d{3}\-?\d{4}$)/
-     if (!validator.isEmpty(phone)) {
-      if (!phoneRegex.test(phone)){
-        result.errors.phone = "Campo telefone inválido";
+
+  // Phone
+  if ('phone' in req.body) {
+    const phoneRegex = /(?=^(\+?5{2}\-?|0)[1-9]{2}\-?\d{4}\-?\d{4}$)(^(\+?5{2}\-?|0)[1-9]{2}\-?[6-9]{1}\d{3}\-?\d{4}$)|(^(\+?5{2}\-?|0)[1-9]{2}\-?9[6-9]{1}\d{3}\-?\d{4}$)/;
+    if (!validator.isEmpty(phone)) {
+      if (!phoneRegex.test(phone)) {
+        result.errors.phone = 'Campo telefone inválido';
       }
     }
   }
@@ -34,55 +34,33 @@ const isValid = (req, res, next) => {
   // Price
   if ('price' in req.body) {
     if (validator.isEmpty(price)) {
-      result.errors.price = "Campo preço não pode ser vazio";
+      result.errors.price = 'Campo preço não pode ser vazio';
     } else if (!validator.isNumeric(price)) {
-      result.errors.price = "Campo preço contem dígito(s) inválido(s)";
+      result.errors.price = 'Campo preço contem dígito(s) inválido(s)';
+    } else if (price < 0) {
+      result.errors.price = 'Campo preço contém valor inválido';
     }
   }
 
   // Description
   if ('description' in req.body) {
     if (validator.isEmpty(description)) {
-      result.errors.description = "Campo descrição não pode ser vazio"
+      result.errors.description = 'Campo descrição não pode ser vazio';
     }
   }
 
   // Address
   if ('address' in req.body) {
-    if (validator.isEmpty(address)) {
-      result.errors.price = "Campo preço não pode ser vazio";
-    } else  {
-      // TODO
+    if (validator.isEmpty(address.street)) {
+      result.errors.address = 'Campo rua não pode ser vazio';
+    } else if (validator.isEmpty(address.district)) {
+      result.errors.address = 'Campo bairro não pode ser vazio';
+    } else if (validator.isEmpty(address.houseNumber)) {
+      result.errors.address = 'Campo número da casa não pode estar vazio';
+    } else if (!validator.isNumeric(address.houseNumber)) {
+      result.errors.address = 'Campo número só pode conter números';
     }
   }
- 
-  // const schema = new passwordValidator();
-  // schema
-  //   .is()
-  //   .min(8)
-  //   .has()
-  //   .digits()
-  //   .has()
-  //   .symbols()
-  //   .has()
-  //   .letters();
-
-  // if (password) {
-  //   if (!schema.validate(password)) {
-  //     result = {
-  //       password: 'A senha necessita ter letras, números e caracteres especiais'
-  //     };
-  //   }
-  //   if (password.length < 8) {
-  //     result = {
-  //       password: 'A senha precisa ter mais de oito letras'
-  //     };
-  //   }
-  // } else {
-  //   result = {
-  //     password: 'Campo senha em branco'
-  //   };
-  // }
 
   if (Object.keys(result.errors).length === 0) {
     next();
