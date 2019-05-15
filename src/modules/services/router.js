@@ -4,7 +4,7 @@ import isValid from '../middlewares/validate'
 
 const serviceRouter = express.Router();
 
-serviceRouter.patch('/update/:id', ServiceController.update);
+serviceRouter.patch('/update/:id', isValid, ServiceController.update);
 serviceRouter.get('/:id', ServiceController.show);
 serviceRouter.get('/', ServiceController.showAll);
 serviceRouter.post('/register', isValid, ServiceController.store);

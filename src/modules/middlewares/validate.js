@@ -58,7 +58,7 @@ const isValid = (req, res, next) => {
     } else if (validator.isEmpty(address.houseNumber)) {
       result.errors.address = 'Campo número da casa não pode estar vazio';
     } else if (!validator.isNumeric(address.houseNumber)) {
-      result.errors.address = 'Campo número precisa conter números';
+      result.errors.address = 'Campo número só pode conter números';
     }
   }
 

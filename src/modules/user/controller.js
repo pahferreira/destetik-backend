@@ -8,13 +8,7 @@ import passwordValidator from 'password-validator';
 import { RSA_NO_PADDING } from 'constants';
 
 const cloudinary_v2 = cloudinary.v2;
-
-dotenv.config();
-
-class UserController {
-  async store(req, res) {
-    try {
-      const schema = new passwordValidator();
+const schema = new passwordValidator();
       schema
         .is()
         .min(8)
@@ -24,6 +18,12 @@ class UserController {
         .symbols()
         .has()
         .letters();
+
+dotenv.config();
+
+class UserController {
+  async store(req, res) {
+    try {      
       if (req.body.password.length < 8) {
         return res
           .status(400)
@@ -66,7 +66,7 @@ class UserController {
     try {
       console.log(req.body);
       const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select('password');
       if (!user) {
         return res.status(404).json({ name: 'Usuário não encontrado.' });
       }
@@ -158,7 +158,7 @@ class UserController {
     try {
       const user = await User.findOneAndDelete({
         _id: req.user.id
-      });
+      }).select('-password');
       if (user) {
         return res.json(user);
       } else {
@@ -206,7 +206,16 @@ class UserController {
 
   async current(req, res, next) {
     try {
-      const user = await User.findById({ _id: req.user.id });
+      const user = await User.findById({ _id: req.user.id })
+      .populate({
+        path: 'services',
+        populate: [
+          {
+            path: 'serviceId',
+            model: 'service'
+          }
+        ]
+      });
       if (user) {
         return res.json(user);
       } else {
