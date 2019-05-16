@@ -56,9 +56,9 @@ const isValid = (req, res, next) => {
     } else if (validator.isEmpty(address.district)) {
       result.errors.address = 'Campo bairro não pode ser vazio';
     } else if (validator.isEmpty(address.houseNumber)) {
-      result.errors.address = 'Campo número da casa não pode estar vazio';
+      result.errors.address = 'Campo número da casa não pode ser vazio';
     } else if (!validator.isNumeric(address.houseNumber)) {
-      result.errors.address = 'Campo número só pode conter números';
+      result.errors.address = 'Campo número deve conter apenas números';
     }
   }
 
