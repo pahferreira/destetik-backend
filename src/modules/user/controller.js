@@ -9,32 +9,29 @@ import { RSA_NO_PADDING } from 'constants';
 
 const cloudinary_v2 = cloudinary.v2;
 const schema = new passwordValidator();
-      schema
-        .is()
-        .min(8)
-        .has()
-        .digits()
-        .has()
-        .symbols()
-        .has()
-        .letters();
+schema
+  .is()
+  .min(8)
+  .has()
+  .digits()
+  .has()
+  .symbols()
+  .has()
+  .letters();
 
 dotenv.config();
 
 class UserController {
   async store(req, res) {
-    try {      
+    try {
       if (req.body.password.length < 8) {
         return res
           .status(400)
           .json({ password: 'A senha precisa ter mais de oito dígitos' });
       } else if (!schema.validate(req.body.password)) {
-        return res
-          .status(400)
-          .json({
-            password:
-              'A senha precisa ter letras, números e caracteres especiais'
-          });
+        return res.status(400).json({
+          password: 'A senha precisa ter letras, números e caracteres especiais'
+        });
       }
       if (req.body.password !== req.body.password2) {
         return res.status(400).json({ password: 'As senhas não coincidem.' });
@@ -68,7 +65,7 @@ class UserController {
       const { email, password } = req.body;
       const user = await User.findOne({ email }).select('password');
       if (!user) {
-        return res.status(404).json({ name: 'Usuário não encontrado.' });
+        return res.status(404).json({ email: 'Usuário não encontrado.' });
       }
       const passwordMatch = await bcrypt.compareSync(password, user.password);
       if (!passwordMatch) {
@@ -206,8 +203,7 @@ class UserController {
 
   async current(req, res, next) {
     try {
-      const user = await User.findById({ _id: req.user.id })
-      .populate({
+      const user = await User.findById({ _id: req.user.id }).populate({
         path: 'services',
         populate: [
           {
