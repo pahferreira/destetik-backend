@@ -34,7 +34,7 @@ class UserController {
         });
       }
       if (req.body.password !== req.body.password2) {
-        return res.status(400).json({ password: 'As senhas não coincidem.' });
+        return res.status(400).json({ password2: 'As senhas não coincidem.' });
       }
       const { name, email, password } = req.body;
       const checkUser = await User.find({ email });

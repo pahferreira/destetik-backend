@@ -13,16 +13,16 @@ const isValid = (req, res, next) => {
 
   // Email
   if ('email' in req.body) {
-    if (!validator.isEmail(email)) {
+    if (validator.isEmpty(email)) {
+      errors.email = 'Campo email não pode ser vazio';      
+    } else if (!validator.isEmail(email)) {
       errors.email = 'Formato de email inválido';
-    } else if (validator.isEmpty(email)) {
-      errors.email = 'Campo email não pode ser vazio';
     }
   }
 
   // Phone
   if ('phone' in req.body) {
-    const phoneRegex = /(?=^(\+?5{2}\-?|0)[1-9]{2}\-?\d{4}\-?\d{4}$)(^(\+?5{2}\-?|0)[1-9]{2}\-?[6-9]{1}\d{3}\-?\d{4}$)|(^(\+?5{2}\-?|0)[1-9]{2}\-?9[6-9]{1}\d{3}\-?\d{4}$)/;
+    const phoneRegex = /\(\d{2}\)\d{4,5}-\d{4}/;
     if (!validator.isEmpty(phone)) {
       if (!phoneRegex.test(phone)) {
         errors.phone = 'Campo telefone inválido';
