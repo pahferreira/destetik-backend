@@ -13,7 +13,7 @@ class ServiceController {
   async store(req, res) {
     try {
       req.body['name'] = capitalize(req.body['name']);
-      const { name, description } = req.body;
+      const { name, description, image } = req.body;
       const checkService = await Service.find({
         name
       });
@@ -21,7 +21,7 @@ class ServiceController {
         return res
           .status(404)
           .json({name: 'O serviço já foi cadastrado.'})
-      const newService = { name, description };
+      const newService = { name, description, image };
       const service = await Service.create(newService);
       return res.json(service);
     } catch (err) {
