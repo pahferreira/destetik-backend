@@ -2,6 +2,36 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
+  method: {
+    type: String,
+    enum: ['local', 'google', 'facebook'],
+    required: true
+  },
+  local: {
+    email: {
+      type: String,
+    },
+    password: {
+      type: String,
+      select: false
+    }  
+  },
+  google: {
+    id: {
+      type: String
+    },
+    email: {
+      type: String
+    }
+  },
+  facebook: {
+    id: {
+      type: String
+    },
+    email: {
+      type: String
+    }
+  },
   name: {
     type: String,
     required: true
