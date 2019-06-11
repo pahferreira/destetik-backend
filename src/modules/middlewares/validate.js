@@ -14,7 +14,7 @@ const isValid = (req, res, next) => {
   // Email
   if ('email' in req.body) {
     if (validator.isEmpty(email)) {
-      errors.email = 'Campo email não pode ser vazio';      
+      errors.email = 'Campo email não pode ser vazio';
     } else if (!validator.isEmail(email)) {
       errors.email = 'Formato de email inválido';
     }
@@ -50,6 +50,7 @@ const isValid = (req, res, next) => {
 
   // Address
   if ('address' in req.body) {
+    const cepRegex = /\d{2}\.\d{3}\-\d{3}/;
     if (validator.isEmpty(address.street)) {
       errors.address = 'Campo rua não pode estar vazio';
     } else if (validator.isEmpty(address.district)) {
@@ -58,6 +59,10 @@ const isValid = (req, res, next) => {
       errors.address = 'Campo número da casa não pode estar vazio';
     } else if (!validator.isNumeric(address.houseNumber)) {
       errors.address = 'Campo número deve conter apenas números';
+    } else if (validator.isEmpty(address.cep)) {
+      errors.address = 'Campo CEP não pode estar vazio';
+    } else if (!cepRegex.test(address.cep)) {
+      errors.address = 'Campo CEP inválido';
     }
   }
 

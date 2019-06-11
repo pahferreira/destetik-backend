@@ -17,8 +17,10 @@ const UserSchema = new Schema({
     select: false
   },
   address: {
+    cep: String,
     street: String,
     district: String,
+    city: String,
     houseNumber: String,
     geoLocation: {
       lat: {
@@ -45,7 +47,8 @@ const UserSchema = new Schema({
   },
   profileImg: {
     type: String,
-    default: 'https://res.cloudinary.com/destetik/image/upload/v1557010793/notFound_nlnz38.jpg'
+    default:
+      'https://res.cloudinary.com/destetik/image/upload/v1557010793/notFound_nlnz38.jpg'
   }
 });
 
