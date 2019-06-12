@@ -6,6 +6,8 @@ import fs from 'fs';
 import cloudinary from 'cloudinary';
 import passwordValidator from 'password-validator';
 import { RSA_NO_PADDING } from 'constants';
+import nodeGeocoder from 'node-geocoder';
+import { constants } from 'zlib';
 
 const cloudinary_v2 = cloudinary.v2;
 const schema = new passwordValidator();
@@ -20,6 +22,15 @@ schema
   .letters();
 
 dotenv.config();
+
+const options = {
+  provider: 'google', 
+  httpAdapter: 'https', 
+  apiKey: `${process.env.GOOGLE_GEOCOORDS_API_KEY}`, 
+  formatter: null
+};
+
+const geocoder = nodeGeocoder(options)
 
 class UserController {
   async store(req, res) {
@@ -97,6 +108,18 @@ class UserController {
             .status(400)
             .json({ email: 'Este e-mail já foi registrado.' });
       }
+
+      if ('address' in req.body){      
+        let { address } = req.body
+        const formatedAddress = `${address.street} - ${address.houseNumber}, ${address.city}, ${address.district}`;
+        await geocoder.geocode(formatedAddress, (err, data) => {
+          address['geoLocation'] = {}
+          address.geoLocation.lat = data[0].latitude;
+          address.geoLocation.lng = data[0].longitude;
+          req.body.address = address;
+        })
+      }
+
       const user = await User.findOneAndUpdate(
         { _id: req.user.id },
         { $set: req.body },
