@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const Rating = new Schema({
+const RatingSchema = new Schema({
   serviceId: {
     type: Schema.Types.ObjectId,
     ref: 'service'
@@ -16,4 +16,4 @@ const Rating = new Schema({
   }
 });
 
-export default mongoose.model('rating', Rating);
+export default mongoose.model('rating', RatingSchema);
