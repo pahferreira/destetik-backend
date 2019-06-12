@@ -50,7 +50,7 @@ const isValid = (req, res, next) => {
 
   // Address
   if ('address' in req.body) {
-    const cepRegex = /\d{2}\.\d{3}\-\d{3}/;
+    const cepRegex = /\d{5}\-\d{3}/;
     if (validator.isEmpty(address.street)) {
       errors.address = 'Campo rua não pode estar vazio';
     } else if (validator.isEmpty(address.district)) {
