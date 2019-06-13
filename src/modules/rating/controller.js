@@ -8,18 +8,10 @@ dotenv.config();
 class RatingController {
   async store(req, res) {
     try {
-      const { service, rate } = req.body;
-      if (!service) {
-        return res.send({ error: 'Serviço não selecionado' });
-      }
-      const choosedService = await Service.findOne({ name: service });
-      if (!choosedService) {
-        return res.send({ error: 'Serviço não encontrado' });
-      }
+      const { rate } = req.body;
       const user = await User.findById(req.user.id);
       const checkRating = await Rating.find({
-        userId: user._id,
-        serviceId: choosedService._id
+        userId: user._id
       });
 
       if (checkRating.length > 0) {
@@ -27,9 +19,8 @@ class RatingController {
           error: 'O serviço já foi avaliado por este usuário'
         });
       }
-      const serviceId = choosedService.id;
-      const userId = user.id;
-      const newRate = { serviceId, userId, rate };
+      const appraiserId = user.id;
+      const newRate = { appraiserId, rate };
       const evaluation = await Rating.create(newRate);
       user.rating.push(evaluation._id);
       user.save();

@@ -72,7 +72,7 @@ const isValid = (req, res, next) => {
       errors.rate = 'Campo avaliação não pode estar vazio';
     } else if (!validator.isNumeric(rate)) {
       errors.rate = 'Campo avaliação deve ser numérico';
-    } else if (rate < 0 || rate > 10) {
+    } else if (rate < 0 || rate > 5) {
       errors.rate = 'Campo avaliação com valor fora do intervalo permitido';
     }
   }
