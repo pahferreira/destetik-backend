@@ -37,6 +37,12 @@ const UserSchema = new Schema({
       ref: 'providedService'
     }
   ],
+  rate: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'rating'
+    }
+  ],
   rating: {
     type: Number,
     default: 0
