@@ -5,7 +5,7 @@ import isValid from '../middlewares/validate';
 
 const ratingRouter = express.Router();
 
-ratingRouter.post('/create', isValid, RatingController.store);
+ratingRouter.post('/create', auth, isValid, RatingController.store);
 ratingRouter.get('/show', isValid, auth, RatingController.show);
 
 export default ratingRouter;

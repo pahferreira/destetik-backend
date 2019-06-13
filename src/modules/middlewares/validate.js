@@ -1,7 +1,7 @@
 import validator from 'validator';
 
 const isValid = (req, res, next) => {
-  const { name, email, phone, price, description, address } = req.body;
+  const { name, email, phone, price, description, address, rate } = req.body;
   let errors = {};
 
   // Name
@@ -63,6 +63,17 @@ const isValid = (req, res, next) => {
       errors.address = 'Campo CEP não pode estar vazio';
     } else if (!cepRegex.test(address.cep)) {
       errors.address = 'Campo CEP inválido';
+    }
+  }
+
+  // Rating
+  if ('rate' in req.body) {
+    if (validator.isEmpty(rate)) {
+      errors.rate = 'Campo avaliação não pode estar vazio';
+    } else if (!validator.isNumeric(rate)) {
+      errors.rate = 'Campo avaliação deve ser numérico';
+    } else if (rate < 0 || rate > 10) {
+      errors.rate = 'Campo avaliação com valor fora do intervalo permitido';
     }
   }
 
