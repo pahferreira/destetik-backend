@@ -37,7 +37,7 @@ const UserSchema = new Schema({
       ref: 'providedService'
     }
   ],
-  rate: [
+  rates: [
     {
       type: Schema.Types.ObjectId,
       ref: 'rating'

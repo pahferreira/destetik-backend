@@ -1,5 +1,6 @@
 import User from './../user/model';
 import Service from './../services/model';
+import PerformedService from './../performedService/model';
 import Rating from './model';
 import dotenv from 'dotenv';
 
@@ -8,23 +9,48 @@ dotenv.config();
 class RatingController {
   async store(req, res) {
     try {
-      const { rate } = req.body;
-      const user = await User.findById(req.user.id);
-      const checkRating = await Rating.find({
-        userId: user._id
-      });
-
-      if (checkRating.length > 0) {
-        return res.send({
-          error: 'O serviço já foi avaliado por este usuário'
+      const { rate, performedServiceId } = req.body;
+      const performedService = await PerformedService.find({_id : performedServiceId}).populate('providedServiceId');
+      const loggedUser = await User.findById(req.user.id);
+      let user;
+      if (loggedUser._id.equals(performedService[0].clientId)) { // Avaliador é o cliente
+        user = await User.findById(performedService[0].providedServiceId.userId).populate({
+          path: 'rates',
+          populate: [
+            {
+              path: 'ratingId',
+              model: 'rating'
+            }
+          ]
+        });
+      } else{
+        user = await User.findById(performedService[0].clientId).populate({
+          path: 'rates',
+          populate: [
+            {
+              path: 'ratingId',
+              model: 'rating'
+            }
+          ]
         });
       }
-      const appraiserId = user.id;
-      const newRate = { appraiserId, rate };
-      const evaluation = await Rating.create(newRate);
-      user.rating.push(evaluation._id);
-      user.save();
-      return res.json(evaluation);
+      if (user.rates.some( e => loggedUser._id.equals(e.appraiserId))) { 
+        return res.send({
+          error: 'Você já avaliou este usuário'
+        });
+      }
+      const payload = {
+        appraiserId : loggedUser._id,
+        rate : rate
+      };
+      const rating = await Rating.create(payload); 
+      user.rates.push(rating);
+      const sum = user.rates.reduce((result, filter) => {
+        return result + Number(filter.rate);
+      }, 0);
+      user.rating = sum / user.rates.length;
+      user.save();      
+      return res.json(rating);
     } catch (err) {
       console.log(err);
     }
@@ -32,9 +58,7 @@ class RatingController {
 
   async show(req, res) {
     try {
-      const ratings = await Rating.find({ userId: req.user.id }).populate(
-        'serviceId'
-      );
+      const ratings = await Rating.find({ userId: req.user.id });
       return res.json(ratings);
     } catch (err) {
       console.log(err);
