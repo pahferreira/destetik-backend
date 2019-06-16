@@ -21,7 +21,7 @@ class PerformedServiceController {
     try {
       const services = await PerformedService.find({ clientId: req.user.id }).populate(
         'clientId'
-      ).populate('providedServiceId');
+      ).populate('providedServiceId').populate({path:'providedServiceId', populate: {path:'userId'}});
       return res.json(services);
     } catch (err) {
       console.log(err);
@@ -33,7 +33,7 @@ class PerformedServiceController {
       const providedServices = await ProvidedService.find({ userId : req.user.id }).select('id');
       const services = await PerformedService.find({ providedServiceId: { $in : providedServices} }).populate(
         'clientId'
-      ).populate('providedServiceId');
+      ).populate('providedServiceId').populate({path:'providedServiceId', populate: {path:'userId'}});
       return res.json(services);
     } catch (err) {
       console.log(err);
