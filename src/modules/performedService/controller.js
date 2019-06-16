@@ -20,8 +20,8 @@ class PerformedServiceController {
   async showClient(req, res) {
     try {
       const services = await PerformedService.find({ clientId: req.user.id }).populate(
-        'ratingId'
-      );
+        'clientId'
+      ).populate('providedServiceId');
       return res.json(services);
     } catch (err) {
       console.log(err);
@@ -32,8 +32,8 @@ class PerformedServiceController {
     try {
       const providedServices = await ProvidedService.find({ userId : req.user.id }).select('id');
       const services = await PerformedService.find({ providedServiceId: { $in : providedServices} }).populate(
-        'ratingId'
-      );
+        'clientId'
+      ).populate('providedServiceId');
       return res.json(services);
     } catch (err) {
       console.log(err);
