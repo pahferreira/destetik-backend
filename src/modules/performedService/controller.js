@@ -19,9 +19,17 @@ class PerformedServiceController {
 
   async showClient(req, res) {
     try {
-      const services = await PerformedService.find({ clientId: req.user.id }).populate(
-        'clientId'
-      ).populate('providedServiceId').populate({path:'providedServiceId', populate: {path:'userId'}});
+      const services = await PerformedService.find({ clientId: req.user.id })
+      .populate('clientId', '_id name')
+      .populate('providedServiceId')
+      .populate({path:'providedServiceId', populate: {
+        path:'userId',
+        select: {'_id':1, 'name':1}
+      }})
+      .populate({path:'providedServiceId', populate: {
+        path:'serviceId',
+        select: {'_id':1, 'name':1}
+      }});
       return res.json(services);
     } catch (err) {
       console.log(err);
@@ -31,9 +39,17 @@ class PerformedServiceController {
   async showProvider(req, res) {
     try {
       const providedServices = await ProvidedService.find({ userId : req.user.id }).select('id');
-      const services = await PerformedService.find({ providedServiceId: { $in : providedServices} }).populate(
-        'clientId'
-      ).populate('providedServiceId').populate({path:'providedServiceId', populate: {path:'userId'}});
+      const services = await PerformedService.find({ providedServiceId: { $in : providedServices} })
+      .populate('clientId', '_id name')
+      .populate('providedServiceId')
+      .populate({path:'providedServiceId', populate: {
+        path:'userId',
+        select: {'_id':1, 'name':1}
+      }})
+      .populate({path:'providedServiceId', populate: {
+        path:'serviceId',
+        select: {'_id':1, 'name':1}
+      }});
       return res.json(services);
     } catch (err) {
       console.log(err);
