@@ -10,7 +10,12 @@ class PerformedServiceController {
   async store(req, res) {
     try {
       // TODO Validação de cliente e providedService inexistentes
-      const performedService = await PerformedService.create(req.body);
+      const {providedServiceId} = req.body
+      const payload = {
+        clientId : req.user.id,
+        providedServiceId : providedServiceId
+      }
+      const performedService = await PerformedService.create(payload);
       return res.json(performedService);
     } catch (err) {
       console.log(err);
