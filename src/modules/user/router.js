@@ -3,6 +3,7 @@ import UserController from './controller';
 import auth from '../middlewares/auth';
 import isValid from '../middlewares/validate';
 import upload from '../middlewares/upload';
+import passport from 'passport';
 const userRouter = express.Router();
 
 //upload.single('productImage')
@@ -19,5 +20,8 @@ userRouter.patch(
   upload.single('image_profile'),
   UserController.update_photo_profile
 );
+
+userRouter.route('/login/facebook')
+  .post(passport.authenticate('facebookToken', { session: false }), UserController.facebookOAuth);
 
 export default userRouter;

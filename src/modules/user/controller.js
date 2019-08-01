@@ -8,6 +8,7 @@ import passwordValidator from 'password-validator';
 import { RSA_NO_PADDING } from 'constants';
 import nodeGeocoder from 'node-geocoder';
 import { constants } from 'zlib';
+import config from '../../config/config';
 
 const cloudinary_v2 = cloudinary.v2;
 const schema = new passwordValidator();
@@ -31,6 +32,15 @@ const options = {
 };
 
 const geocoder = nodeGeocoder(options)
+
+const signToken = user => {
+  return jwt.sign({
+    iss: 'CodeWorkr',
+    sub: user.id,
+    iat: new Date().getTime(), // current time
+    exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
+  }, config.secret);
+}
 
 class UserController {
   async store(req, res) {
@@ -243,7 +253,16 @@ class UserController {
       console.log(err);
     }
   }
+
+  async facebookOAuth(req, res, next) {
+    // Generate token
+    const token = signToken(req.user);
+    res.status(200).json({ token });
+  }
+
 }
+
+
 
 const userController = new UserController();
 export default userController;

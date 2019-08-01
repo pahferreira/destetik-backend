@@ -13,7 +13,6 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
     select: false
   },
   address: {
@@ -55,7 +54,18 @@ const UserSchema = new Schema({
     type: String,
     default:
       'https://res.cloudinary.com/destetik/image/upload/v1557010793/notFound_nlnz38.jpg'
+  },
+  google: {
+    id: {
+      type: String
+    },
+  },
+  facebook: {
+    id: {
+      type: String
+    },
   }
+
 });
 
 export default mongoose.model('user', UserSchema);
