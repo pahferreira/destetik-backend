@@ -258,7 +258,7 @@ class UserController {
     // Generate token
     const token = signToken(req.user);
     const token_bearer = 'Bearer ' + token
-    res.status(200).json({ token_bearer });
+    res.status(200).json({ token: token_bearer });
   }
 
 }
