@@ -256,9 +256,18 @@ class UserController {
 
   async facebookOAuth(req, res, next) {
     // Generate token
-    const token = signToken(req.user);
-    const token_bearer = 'Bearer ' + token
-    res.status(200).json({ token: token_bearer });
+    const payload = {
+      id: req.user.id,
+      email: req.user.email,
+      name: req.user.name
+    };
+    const token = await jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 3600
+    });
+    return res.json({
+      success: true,
+      token: `Bearer ${token}`
+    });
   }
 
 }
