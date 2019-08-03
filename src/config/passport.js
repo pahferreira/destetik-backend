@@ -3,8 +3,8 @@ import User from '../modules/user/model';
 import passport from 'passport';
 import passport_jwt from 'passport-jwt';
 import FacebookTokenStrategy from 'passport-facebook-token';
-import auth_facebook from './authFacebook'
-
+import GoogleTokenStrategy from 'passport-google-oauth2';
+import auth_facebook from './authFacebook';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -37,32 +37,70 @@ passport.use(
   })
 );
 
-passport.use('facebookToken', new FacebookTokenStrategy({
-  clientID: config.facebook_api_key,
-  clientSecret: config.facebook_api_secret
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-   
-    const existingUser = await User.findOne({ "facebook.id": profile.id });
-    if (existingUser) {
-      return done(null, existingUser);
-    }
+passport.use(
+  'googleToken',
+  new GoogleTokenStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: config.callbackURL
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findOne({ googleId: profile.id });
+        if (existingUser) {
+          return done(null, existingUser);
+        }
 
-    const newUser = new User({
-      name: profile.displayName,
-      profileImg: profile.photos[0].value,
-      email: profile.emails[0].value,
-      facebook: {
-        id: profile.id,
-        email: profile.emails[0].value
+        const newUser = new User({
+          name: profile.displayName,
+          profileImg: profile.picture,
+          email: profile.email,
+          google: {
+            id: profile.id,
+            email: profile.email
+          }
+        });
+        await newUser.save();
+        done(null, newUser);
+      } catch (err) {
+        done(error, false, error.message);
       }
-    });
+    }
+  )
+);
 
-    await newUser.save();
-    done(null, newUser);
-  } catch(error) {
-    done(error, false, error.message);
-  }
-}));
+passport.use(
+  'facebookToken',
+  new FacebookTokenStrategy(
+    {
+      clientID: config.facebook_api_key,
+      clientSecret: config.facebook_api_secret
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const existingUser = await User.findOne({ 'facebook.id': profile.id });
+        if (existingUser) {
+          return done(null, existingUser);
+        }
+
+        const newUser = new User({
+          name: profile.displayName,
+          profileImg: profile.photos[0].value,
+          email: profile.emails[0].value,
+          facebook: {
+            id: profile.id,
+            email: profile.emails[0].value
+          }
+        });
+
+        await newUser.save();
+        done(null, newUser);
+      } catch (error) {
+        done(error, false, error.message);
+      }
+    }
+  )
+);
 
 export default passport;

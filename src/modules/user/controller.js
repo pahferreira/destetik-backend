@@ -25,22 +25,25 @@ schema
 dotenv.config();
 
 const options = {
-  provider: 'google', 
-  httpAdapter: 'https', 
-  apiKey: `${process.env.GOOGLE_GEOCOORDS_API_KEY}`, 
+  provider: 'google',
+  httpAdapter: 'https',
+  apiKey: `${process.env.GOOGLE_GEOCOORDS_API_KEY}`,
   formatter: null
 };
 
-const geocoder = nodeGeocoder(options)
+const geocoder = nodeGeocoder(options);
 
 const signToken = user => {
-  return jwt.sign({
-    iss: 'CodeWorkr',
-    sub: user.id,
-    iat: new Date().getTime(), // current time
-    exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
-  }, config.secret);
-}
+  return jwt.sign(
+    {
+      iss: 'CodeWorkr',
+      sub: user.id,
+      iat: new Date().getTime(), // current time
+      exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
+    },
+    config.secret
+  );
+};
 
 class UserController {
   async store(req, res) {
@@ -119,15 +122,17 @@ class UserController {
             .json({ email: 'Este e-mail já foi registrado.' });
       }
 
-      if ('address' in req.body){      
-        let { address } = req.body
-        const formatedAddress = `${address.street} - ${address.houseNumber}, ${address.city}, ${address.district}`;
+      if ('address' in req.body) {
+        let { address } = req.body;
+        const formatedAddress = `${address.street} - ${address.houseNumber}, ${
+          address.city
+        }, ${address.district}`;
         await geocoder.geocode(formatedAddress, (err, data) => {
-          address['geoLocation'] = {}
+          address['geoLocation'] = {};
           address.geoLocation.lat = data[0].latitude;
           address.geoLocation.lng = data[0].longitude;
           req.body.address = address;
-        })
+        });
       }
 
       const user = await User.findOneAndUpdate(
@@ -270,9 +275,21 @@ class UserController {
     });
   }
 
+  async googleOAuth(req, res, next) {
+    const payload = {
+      id: req.user.id,
+      email: req.user.email,
+      name: req.user.name
+    };
+    const token = await jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 3600
+    });
+    return res.json({
+      success: true,
+      token: `Bearer ${token}`
+    });
+  }
 }
-
-
 
 const userController = new UserController();
 export default userController;

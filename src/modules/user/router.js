@@ -21,7 +21,18 @@ userRouter.patch(
   UserController.update_photo_profile
 );
 
-userRouter.route('/login/facebook')
-  .post(passport.authenticate('facebookToken', { session: false }), UserController.facebookOAuth);
+userRouter
+  .route('/login/facebook')
+  .post(
+    passport.authenticate('facebookToken', { session: false }),
+    UserController.facebookOAuth
+  );
+
+userRouter
+  .route('/login/google')
+  .post(
+    passport.authenticate('googleToken', { session: false }),
+    UserController.googleOAuth
+  );
 
 export default userRouter;
