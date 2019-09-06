@@ -1,26 +1,27 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
 import routes from './routes';
 import Cors from 'cors';
 import passport from 'passport';
 require('./config/passport');
 
-dotenv.config();
+dotenv.config({
+  path: path.resolve(
+    __dirname,
+    `../.environments/${process.env.ENVIRONMENT}.env`
+  )
+});
 const app = express();
 
 // Database Config
 const port = process.env.PORT || 5000;
-const databaseUri = `mongodb://${process.env.DATABASE_USER}:${
-  process.env.DATABASE_PASSWORD
-}@${process.env.DATABASE_URI}`;
+const databaseUri = `mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URI}`;
 
-mongoose
-  .connect(databaseUri, {
-    useNewUrlParser: true
-  })
-  .then(() => console.log('Database Connected.'))
-  .catch(err => console.log(err));
+mongoose.connect(databaseUri, {
+  useNewUrlParser: true
+});
 
 app.use(Cors());
 app.use('/uploads', express.static('uploads'));
@@ -30,4 +31,8 @@ app.use(routes);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.listen(port, () => console.log(`Server is running! Port: ${port}`));
+if (process.env.ENVIRONMENT === 'dev') {
+  app.listen(port, () => console.log(`Server is running! Port: ${port}`));
+}
+
+export default app;

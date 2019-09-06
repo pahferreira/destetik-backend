@@ -1,12 +1,15 @@
 {
   "name": "destetik",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "version": "1.0.0",
   "description": "Repository to GPS Project",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ENVIRONMENT=test jest --detectOpenHandles",
     "start": "node -r esm src/main.js",
-    "dev": "nodemon -r esm src/main.js"
+    "dev": "ENVIRONMENT=dev nodemon -r esm src/main.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
     "dotenv": "^7.0.0",
     "esm": "^3.2.22",
     "express": "^4.16.4",
+    "jest": "^24.9.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "mongoose": "^5.4.20",
@@ -37,6 +41,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "password-validator": "^4.1.1",
+    "supertest": "^4.0.2",
     "validator": "^10.11.0"
   }
 }
