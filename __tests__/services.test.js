@@ -3,31 +3,21 @@ const app = esmImport('../src/main').default;
 const supertest = require('supertest');
 const mongoose = require('mongoose');
 const request = supertest(app);
-
-// beforeAll(async done => {
-//   try {
-//     // const db = await mongoose.connect(
-//     //   'mongodb://test_admin:testadmin123qwe@ds217678.mlab.com:17678/destetik-test',
-//     //   {
-//     //     useNewUrlParser: true
-//     //   }
-//     // );
-//     return done();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+const newService = {};
 
 afterAll(async done => {
-  // await mongoose.disconnect();
   done();
+});
+
+beforeAll(() => {
+  newService.name = 'Test Service';
+  newService.description = 'Test description';
 });
 
 describe('Services Tests', () => {
   it('Getting All Services', async done => {
     try {
       const res = await request.get('/api/service/');
-      // Try it with .end()
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
       done();
@@ -35,4 +25,63 @@ describe('Services Tests', () => {
       done(e);
     }
   });
+  it('Create One Service', async done => {
+    try {
+      const res = await request.post('/api/service/register/').send(newService);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body.name).toBe(newService.name);
+      expect(res.body.description).toBe(newService.description);
+      newService.id = res.body._id;
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Getting Service by id', async done => {
+    try {
+      const res = await request.get(`/api/service/${newService.id}`);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body.name).toBe(newService.name);
+      expect(res.body.description).toBe(newService.description);
+      expect(res.body._id).toBe(newService.id);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Updating Service by id', async done => {
+    try {
+      const testUpdate = {
+        name: 'Test Updated Name'
+      };
+      const res = await request
+        .patch(`/api/service/update/${newService.id}`)
+        .send(testUpdate);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body.name).toBe(testUpdate.name);
+      expect(res.body._id).toBe(newService.id);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Removing Service by id', async done => {
+    try {
+      const res = await request.delete(`/api/service/${newService.id}`);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body.description).toBe(newService.description);
+      expect(res.body._id).toBe(newService.id);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
 });
+
+describe('Removing Service', () => {});
+
+// serviceRouter.delete('/:id', ServiceController.delete);
