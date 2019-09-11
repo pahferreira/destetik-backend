@@ -17,7 +17,7 @@ const app = express();
 
 // Database Config
 const port = process.env.PORT || 5000;
-const databaseUri = `mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_URI}`;
+const databaseUri = `mongodb://localhost:27017/destetik`;
 
 mongoose.connect(databaseUri, {
   useNewUrlParser: true
