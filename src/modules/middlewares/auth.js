@@ -6,8 +6,6 @@ const auth = (req, res, next) => {
       console.log(err);
     }
     if (info != undefined) {
-      console.log(info.message);
-      
       res.send(info.message);
     } else {
       req.user = user;

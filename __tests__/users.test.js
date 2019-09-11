@@ -3,6 +3,7 @@ const app = esmImport('../src/main').default;
 const supertest = require('supertest');
 const mongoose = require('mongoose');
 const request = supertest(app);
+const faker = require('faker')
 const newUser = {};
 
 afterAll(async done => {
@@ -10,10 +11,10 @@ afterAll(async done => {
 });
 
 beforeAll(() => {
-  newUser.name = 'Fulano de Tal';
-  newUser.email = 'fulando@tal.com';
-  newUser.password = 'superseguro123#$%'
-  newUser.password2 = 'superseguro123#$%'
+  newUser.name = faker.name.findName();
+  newUser.email = faker.internet.email();
+  newUser.password = 'asjdfaMKINJH345#$%#';
+  newUser.password2 = newUser.password
 });
 
 describe('Users Tests', () => {
@@ -48,8 +49,46 @@ describe('Users Tests', () => {
       expect(res.body).not.toBeNull();
       expect(res.body.token).not.toBeNull();
       newUser.token = res.body.token
-      console.log(newUser.token);
-      
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Updating User by id', async done => {
+    try {
+      newUser.name = faker.name.findName()
+      const res = await request
+        .patch(`/api/user/update/`)
+        .set('Authorization', newUser.token)
+        .send(newUser);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body.name).toBe(newUser.name);
+      expect(res.body._id).toBe(newUser.id);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Get Current User', async done => {
+    try {
+      const res = await request.get('/api/user/current/')
+        .set('Authorization', newUser.token)
+        .send(newUser);
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body._id).toBe(newUser.id);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+  it('Get Specific User', async done => {
+    try {
+      const res = await request.get(`/api/user/show/${newUser.id}`)
+      expect(res.status).toBe(200);
+      expect(res.body).not.toBeNull();
+      expect(res.body._id).toBe(newUser.id);
       done();
     } catch (e) {
       done(e);
