@@ -74,6 +74,7 @@ class UserController {
       });
       newUser.password = hashedPassword;
       const user = await User.create(newUser);
+      user.password = undefined;
       return res.json(user);
     } catch (err) {
       console.log(err);
