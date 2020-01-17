@@ -33,7 +33,7 @@ class PerformedServiceController {
       }})
       .populate({path:'providedServiceId', populate: {
         path:'serviceId',
-        select: {'_id':1, 'name':1}
+        select: {'_id':1, 'name':1, 'image':1}
       }});
       return res.json(services);
     } catch (err) {
@@ -59,6 +59,11 @@ class PerformedServiceController {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async payService(req, res) {
+    const {performedServiceId} = req.body
+
   }
 }
 

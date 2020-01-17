@@ -16,6 +16,10 @@ const PerformedServiceSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'rating'
   },
+  isPaid: {
+    type: Boolean,
+    default: false
+  }
 });
 
 export default mongoose.model('performedService', PerformedServiceSchema);
