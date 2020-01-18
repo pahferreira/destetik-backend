@@ -64,7 +64,7 @@ class PerformedServiceController {
 
   async payService(req, res) {
     const {performedServiceId} = req.body
-    axios.post('http://localhost:3000/', req.body).then(function (response) {
+    axios.post('http://3.93.37.174:3000/', req.body).then(function (response) {
       console.log(response.data)
     })
     .catch(function (error) {
