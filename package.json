@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/pahferreira/destetik#readme",
   "dependencies": {
+    "axios": "^0.19.1",
     "bcrypt": "^3.0.6",
     "cloudinary": "^1.14.0",
     "concurrently": "^4.1.0",

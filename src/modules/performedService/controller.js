@@ -3,6 +3,7 @@ import Service from './../services/model';
 import ProvidedService from './../providedService/model'
 import PerformedService from './model';
 import dotenv from 'dotenv';
+const axios = require('axios').default;
 
 dotenv.config();
 
@@ -53,7 +54,7 @@ class PerformedServiceController {
       }})
       .populate({path:'providedServiceId', populate: {
         path:'serviceId',
-        select: {'_id':1, 'name':1}
+        select: {'_id':1, 'name':1, 'image':1}
       }});
       return res.json(services);
     } catch (err) {
@@ -63,7 +64,29 @@ class PerformedServiceController {
 
   async payService(req, res) {
     const {performedServiceId} = req.body
+    axios.post('http://localhost:3000/', req.body).then(function (response) {
+      console.log(response.data)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    return res.json('Your payment will be processed')
 
+  }
+
+  async changePaymentStatus(req, res) {
+    const {performedServiceId} = req.body;
+    try{
+      const service = await PerformedService.findOneAndUpdate(
+        { _id: performedServiceId },
+        { $set: {'isPaid': true} },
+        { useFindAndModify: false, new: true }
+      );
+      return res.status(204).json('Success')
+    } catch (err) {
+      console.log(err);
+      return res.status(404).json()
+    }
   }
 }
 
